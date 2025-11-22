@@ -1,9 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\RecursosVisuales\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\RecursosVisuales\ahorcado1.jpg" />
+    <None Include="wwwroot\RecursosVisuales\ahorcado2.jpg" />
+    <None Include="wwwroot\RecursosVisuales\ahorcado3.jpg" />
+    <None Include="wwwroot\RecursosVisuales\ahorcado4.jpg" />
+    <None Include="wwwroot\RecursosVisuales\ahorcado5.jpg" />
+    <None Include="wwwroot\RecursosVisuales\ahorcado6.jpg" />
+    <None Include="wwwroot\RecursosVisuales\ahorcado7.jpg" />
+    <None Include="wwwroot\RecursosVisuales\ahorcado8.jpg" />
+  </ItemGroup>
 
 </Project>

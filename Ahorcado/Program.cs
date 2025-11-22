@@ -1,7 +1,12 @@
+using Ahorcado.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+
+builder.Services.AddSingleton<AhorcadoService>();
 
 var app = builder.Build();
 

@@ -1,3 +1,6 @@
+using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Ahorcado.Models;
 
 namespace Ahorcado.Service
@@ -5,15 +8,87 @@ namespace Ahorcado.Service
     public class AhorcadoService
     {
         private readonly Partida _juego = new Partida();
+        private readonly HttpClient _httpClient;
 
-        public Partida Obtener()
+        private const int INTENTOS_MAXIMOS = 8;
+        private const int LONGITUD_MINIMA = 6;
+
+        private static readonly string[] _fallbackPalabras =
         {
-            return _juego;
+            "PROGRAMACION",
+            "BATMAN",
+            "TRANSPORTE",
+            "AMARILLO",
+            "LECTURA",
+            "FUNCIONAMIENTO",
+            "BIBLIOTECA",
+            "HISTORIAS"
+        };
+
+        private class RandomWordApiResponse
+        {
+            [JsonPropertyName("word")]
+            public string Word { get; set; } = "";
         }
+
+
+        public AhorcadoService()
+        {
+            _httpClient = new HttpClient();
+        }
+
+        public Partida Obtener() => _juego;
 
         public Partida NuevoJuego(string palabra)
         {
-            _juego.Palabra = palabra.Trim().ToUpper();
+            _juego.Palabra = (palabra ?? "").Trim().ToUpper();
+            _juego.LetrasCorrectas = "";
+            _juego.Fallos = 0;
+            return _juego;
+        }
+
+        public async Task<Partida> NuevoJuegoDesdeApiAsync()
+        {
+            const int MAX_REINTENTOS = 10;
+
+            for (int intento = 0; intento < MAX_REINTENTOS; intento++)
+            {
+                try
+                {
+                    var response = await _httpClient.GetAsync("https://random-words-api.vercel.app/word/spanish");
+                    if (!response.IsSuccessStatusCode)
+                        continue;
+
+                    var json = await response.Content.ReadAsStringAsync();
+                    var opciones = JsonSerializer.Deserialize<List<RandomWordApiResponse>>(json);
+                    var palabra = opciones?.FirstOrDefault()?.Word;
+
+                    if (!string.IsNullOrWhiteSpace(palabra))
+                    {
+                        palabra = palabra.ToUpper().Trim();
+
+                        if (palabra.Length >= LONGITUD_MINIMA && palabra.All(c => char.IsLetter(c)))
+                        {
+                            _juego.Palabra = palabra;
+                            _juego.LetrasCorrectas = "";
+                            _juego.Fallos = 0;
+                            return _juego;
+                        }
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+
+
+            var rnd = new Random();
+            var fallback = _fallbackPalabras[rnd.Next(_fallbackPalabras.Length)];
+            if (string.IsNullOrWhiteSpace(fallback))
+                fallback = "PROGRAMACION";
+
+            _juego.Palabra = fallback.ToUpper();
             _juego.LetrasCorrectas = "";
             _juego.Fallos = 0;
 
@@ -24,7 +99,7 @@ namespace Ahorcado.Service
         {
             letra = char.ToUpper(letra);
 
-            if (_juego.Palabra.Contains(letra))
+            if (!string.IsNullOrEmpty(_juego.Palabra) && _juego.Palabra.Contains(letra))
             {
                 if (!_juego.LetrasCorrectas.Contains(letra))
                     _juego.LetrasCorrectas += letra;
@@ -39,14 +114,14 @@ namespace Ahorcado.Service
 
         public string ObtenerEstadoVisible()
         {
+            if (string.IsNullOrEmpty(_juego.Palabra))
+                return "";
+
             string visible = "";
 
             foreach (char c in _juego.Palabra)
             {
-                if (_juego.LetrasCorrectas.Contains(c))
-                    visible += c;
-                else
-                    visible += "_";
+                visible += _juego.LetrasCorrectas.Contains(c) ? c : "_";
             }
 
             return visible;
@@ -54,29 +129,29 @@ namespace Ahorcado.Service
 
         public bool Gano()
         {
-            //Gana si adivina todas las letras
+
+            if (string.IsNullOrEmpty(_juego.Palabra))
+                return false;
+
             foreach (char c in _juego.Palabra)
             {
                 if (!_juego.LetrasCorrectas.Contains(c))
                     return false;
             }
-
             return true;
         }
 
-        public bool Perdio()
-        {
-            return _juego.Fallos >= 6;
-        }
+        public bool Perdio() => _juego.Fallos >= INTENTOS_MAXIMOS;
 
         public string ObtenerImagen()
         {
-            int f = _juego.Fallos;
+            int f = _juego.Fallos + 1; 
 
-            if (f > 6)
-                f = 6;
+            if (f < 1) f = 1;
+            if (f > INTENTOS_MAXIMOS) f = INTENTOS_MAXIMOS;
 
-            return $"/img/ahorcado_{f}.png";
+
+            return $"/RecursosVisuales/ahorcado{f}.jpg";
         }
     }
 }

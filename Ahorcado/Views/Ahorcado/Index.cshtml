@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Juego del Ahorcado";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm mt-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Ahorcado</span>
+                <button id="btn-nuevo" class="btn btn-sm btn-primary">Nuevo juego</button>
+            </div>
+            <div class="card-body text-center">
+
+                <p class="mb-1">
+                    Fallos: <span id="txt-fallos">0</span> / 8
+                </p>
+
+                <img id="img-ahorcado"
+                     src="/RecursosVisuales/ahorcado1.jpg"
+                     alt="Ahorcado"
+                     class="img-fluid my-3"
+                     style="max-height:250px;" />
+
+                <h3 id="palabra-oculta" class="mb-4">_ _ _ _</h3>
+
+                <div id="teclado" class="mb-3">
+                    <!-- Botones de letras generados por JS -->
+                </div>
+
+                <p id="mensaje" class="fw-bold"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function formatearPalabra(estado) {
+            return estado.split('').join(' ');
+        }
+
+        function actualizarPantalla(data) {
+            $('#palabra-oculta').text(formatearPalabra(data.estado));
+            $('#img-ahorcado').attr('src', data.imagen);
+            $('#txt-fallos').text(data.fallos);
+
+            if (data.gano) {
+                $('#mensaje').text('¡Ganaste! 😄');
+                $('.btn-letra').prop('disabled', true);
+            } else if (data.perdio) {
+                $('#mensaje').text('Perdiste... 😢');
+                $('.btn-letra').prop('disabled', true);
+            } else {
+                $('#mensaje').text('');
+            }
+        }
+
+        function cargarNuevoJuego() {
+            $.get('/Ahorcado/NuevoJuegoApi', function (data) {
+                $('.btn-letra').prop('disabled', false);
+                actualizarPantalla(data);
+            });
+        }
+
+        function intentar(letra) {
+            $.post('/Ahorcado/Intentar', { letra: letra }, function (data) {
+                actualizarPantalla(data);
+            });
+        }
+
+        $(document).ready(function () {
+            // Crear teclado de letras
+            const letras = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ';
+            let html = '';
+            for (let c of letras) {
+                html += `<button type="button" class="btn btn-outline-secondary m-1 btn-letra" data-letra="${c}">${c}</button>`;
+            }
+            $('#teclado').html(html);
+
+            $('#teclado').on('click', '.btn-letra', function () {
+                const letra = $(this).data('letra');
+                $(this).prop('disabled', true);
+                intentar(letra);
+            });
+
+            $('#btn-nuevo').click(function () {
+                cargarNuevoJuego();
+            });
+
+            cargarNuevoJuego();
+        });
+    </script>
+}

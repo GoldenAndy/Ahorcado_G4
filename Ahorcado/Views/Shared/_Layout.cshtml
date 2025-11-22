@@ -25,11 +25,19 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+
+                        <!-- 🔹 Nuevo: link para ir al juego -->
+                        <li class="nav-item">
+                            <a class="nav-link text-primary fw-bold" asp-area="" asp-controller="Ahorcado" asp-action="Index">
+                                Iniciar juego
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

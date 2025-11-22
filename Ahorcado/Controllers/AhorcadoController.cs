@@ -17,7 +17,7 @@ namespace Ahorcado.Controllers
             return View();
         }
 
-        //Crea la partida con la palabra nueva
+
         [HttpPost]
         public IActionResult NuevoJuego(string palabra)
         {
@@ -31,14 +31,33 @@ namespace Ahorcado.Controllers
 
             return Json(new
             {
-                estado,                          
-                longitud = juego.Palabra.Length, 
+                estado,
+                longitud = juego.Palabra.Length,
                 fallos = juego.Fallos,
                 imagen = _service.ObtenerImagen(),
                 gano = _service.Gano(),
                 perdio = _service.Perdio()
             });
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> NuevoJuegoApi()
+        {
+            var juego = await _service.NuevoJuegoDesdeApiAsync();
+            var estado = _service.ObtenerEstadoVisible();
+
+            return Json(new
+            {
+                estado,
+                longitud = juego.Palabra.Length,
+                fallos = juego.Fallos,
+                imagen = _service.ObtenerImagen(),
+                gano = _service.Gano(),
+                perdio = _service.Perdio()
+            });
+        }
+
 
         [HttpPost]
         public IActionResult Intentar(string letra)
