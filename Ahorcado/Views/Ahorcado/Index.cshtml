@@ -2,92 +2,102 @@
     ViewData["Title"] = "Juego del Ahorcado";
 }
 
-<div class="row justify-content-center">
+<div class="row justify-content-center" role="main" aria-label="Juego del Ahorcado">
     <div class="col-md-8">
         <div class="card shadow-sm mt-3">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span class="fw-bold">Ahorcado</span>
-                <button id="btn-nuevo" class="btn btn-sm btn-primary">Nuevo juego</button>
+                <button id="btn-nuevo"
+                        class="btn btn-sm btn-primary"
+                        type="button"
+                        aria-label="Iniciar un nuevo juego de ahorcado">
+                    Nuevo juego
+                </button>
             </div>
             <div class="card-body text-center">
 
-                <p class="mb-1">
-                    Fallos: <span id="txt-fallos">0</span> / 8
+                <p class="mb-1" aria-live="polite">
+                    Fallos: <span id="txt-fallos">0</span> / 7
                 </p>
 
                 <img id="img-ahorcado"
                      src="/RecursosVisuales/ahorcado1.jpg"
-                     alt="Ahorcado"
+                     alt="Estado actual del muñeco del ahorcado"
                      class="img-fluid my-3"
-                     style="max-height:250px;" />
+                     style="max-height:15em;" />
 
-                <h3 id="palabra-oculta" class="mb-4">_ _ _ _</h3>
+                <h3 id="palabra-oculta"
+                    class="mb-4"
+                    aria-label="Palabra oculta"
+                    aria-live="polite">
+                    _ _ _ _
+                </h3>
 
-                <div id="teclado" class="mb-3">
-                    <!-- Botones de letras generados por JS -->
+                <div id="teclado"
+                     class="mb-3"
+                     role="group"
+                     aria-label="Teclado de letras para adivinar la palabra">
+
                 </div>
 
-                <p id="mensaje" class="fw-bold"></p>
+                <p id="mensaje"
+                   class="fw-bold"
+                   role="status"
+                   aria-live="polite">
+                </p>
             </div>
         </div>
     </div>
 </div>
 
+
+<button id="btn-accesibilidad"
+        class="btn"
+        type="button"
+        aria-label="Abrir opciones de accesibilidad"
+        aria-haspopup="true"
+        aria-expanded="false">
+    👤
+</button>
+
+
+<div id="panel-accesibilidad"
+     class="card"
+     role="dialog"
+     aria-modal="false"
+     aria-label="Opciones de accesibilidad">
+    <div class="card-header py-2">
+        <strong>Accesibilidad</strong>
+    </div>
+    <div class="card-body py-2">
+        <div class="form-check text-start mb-2">
+            <input class="form-check-input" type="checkbox" id="chk-alto-contraste" />
+            <label class="form-check-label" for="chk-alto-contraste">
+                Modo alto contraste
+            </label>
+        </div>
+        <div class="text-start mb-2">
+            <span class="me-2">Tamaño de texto</span>
+            <button type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    id="btn-font-minus"
+                    aria-label="Disminuir tamaño de texto">
+                A-
+            </button>
+            <button type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    id="btn-font-plus"
+                    aria-label="Aumentar tamaño de texto">
+                A+
+            </button>
+        </div>
+        <small class="text-muted">
+            Usa Tab, Enter o Space para activar opciones.
+            Usa las flechas ↑ y ↓ para moverte entre secciones.
+        </small>
+    </div>
+</div>
+
 @section Scripts {
-    <script>
-        function formatearPalabra(estado) {
-            return estado.split('').join(' ');
-        }
-
-        function actualizarPantalla(data) {
-            $('#palabra-oculta').text(formatearPalabra(data.estado));
-            $('#img-ahorcado').attr('src', data.imagen);
-            $('#txt-fallos').text(data.fallos);
-
-            if (data.gano) {
-                $('#mensaje').text('¡Ganaste! 😄');
-                $('.btn-letra').prop('disabled', true);
-            } else if (data.perdio) {
-                $('#mensaje').text('Perdiste... 😢');
-                $('.btn-letra').prop('disabled', true);
-            } else {
-                $('#mensaje').text('');
-            }
-        }
-
-        function cargarNuevoJuego() {
-            $.get('/Ahorcado/NuevoJuegoApi', function (data) {
-                $('.btn-letra').prop('disabled', false);
-                actualizarPantalla(data);
-            });
-        }
-
-        function intentar(letra) {
-            $.post('/Ahorcado/Intentar', { letra: letra }, function (data) {
-                actualizarPantalla(data);
-            });
-        }
-
-        $(document).ready(function () {
-            // Crear teclado de letras
-            const letras = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ';
-            let html = '';
-            for (let c of letras) {
-                html += `<button type="button" class="btn btn-outline-secondary m-1 btn-letra" data-letra="${c}">${c}</button>`;
-            }
-            $('#teclado').html(html);
-
-            $('#teclado').on('click', '.btn-letra', function () {
-                const letra = $(this).data('letra');
-                $(this).prop('disabled', true);
-                intentar(letra);
-            });
-
-            $('#btn-nuevo').click(function () {
-                cargarNuevoJuego();
-            });
-
-            cargarNuevoJuego();
-        });
-    </script>
+    <script src="~/js/compatibilidadFlechas.js" asp-append-version="true"></script>
 }

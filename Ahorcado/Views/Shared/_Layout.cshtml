@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/Ahorcado.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
+    <header id="seccion-header" tabindex="-1">
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Ahorcado</a>
@@ -26,7 +26,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
 
-                        <!-- 🔹 Nuevo: link para ir al juego -->
+                        <!-- Link para ir al juego -->
                         <li class="nav-item">
                             <a class="nav-link text-primary fw-bold" asp-area="" asp-controller="Ahorcado" asp-action="Index">
                                 Iniciar juego
@@ -39,12 +39,12 @@
     </header>
 
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3" id="seccion-main" tabindex="-1">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted" id="seccion-footer" tabindex="-1">
         <div class="container">
             &copy; 2025 - Ahorcado - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>

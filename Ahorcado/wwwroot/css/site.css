@@ -20,3 +20,81 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+
+/*Acá está lo de Accesibilidad*/
+
+#btn-accesibilidad {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    background-color: #0d6efd;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 0 8px rgba(0, 0, 0, .3);
+}
+
+    #btn-accesibilidad:hover,
+    #btn-accesibilidad:focus {
+        background-color: #0b5ed7;
+        outline: 2px solid #ffffff;
+        outline-offset: 2px;
+    }
+
+#panel-accesibilidad {
+    position: fixed;
+    bottom: 5rem;
+    left: 1.5rem;
+    max-width: 18rem;
+    display: none;
+    z-index: 1100;
+    font-size: 0.95em;
+}
+
+
+body.modo-alto-contraste {
+    background-color: #000;
+    color: #fff;
+}
+
+    body.modo-alto-contraste .card {
+        background-color: #000;
+        color: #fff;
+        border-color: #fff;
+    }
+
+    body.modo-alto-contraste .btn {
+        background-color: #fff;
+        color: #000;
+        border-color: #fff;
+    }
+
+    body.modo-alto-contraste a,
+    body.modo-alto-contraste .nav-link {
+        color: #ffeb3b !important;
+    }
+
+
+body {
+    font-size: 1em;
+}
+
+#teclado {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, auto));
+    justify-content: center;
+}
+
+    #teclado .btn-letra {
+        width: 3rem;
+        margin: 0.25rem;
+    }

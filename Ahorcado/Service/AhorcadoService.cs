@@ -1,4 +1,3 @@
-using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Ahorcado.Models;
@@ -10,8 +9,9 @@ namespace Ahorcado.Service
         private readonly Partida _juego = new Partida();
         private readonly HttpClient _httpClient;
 
-        private const int INTENTOS_MAXIMOS = 8;
+        private const int INTENTOS_MAXIMOS = 7;
         private const int LONGITUD_MINIMA = 6;
+        private const int TOTAL_IMAGENES = 8;
 
         private static readonly string[] _fallbackPalabras =
         {
@@ -50,6 +50,7 @@ namespace Ahorcado.Service
         public async Task<Partida> NuevoJuegoDesdeApiAsync()
         {
             const int MAX_REINTENTOS = 10;
+
 
             for (int intento = 0; intento < MAX_REINTENTOS; intento++)
             {
@@ -145,13 +146,15 @@ namespace Ahorcado.Service
 
         public string ObtenerImagen()
         {
-            int f = _juego.Fallos + 1; 
+
+
+            int f = _juego.Fallos + 1;
 
             if (f < 1) f = 1;
-            if (f > INTENTOS_MAXIMOS) f = INTENTOS_MAXIMOS;
-
+            if (f > TOTAL_IMAGENES) f = TOTAL_IMAGENES;
 
             return $"/RecursosVisuales/ahorcado{f}.jpg";
         }
+
     }
 }
